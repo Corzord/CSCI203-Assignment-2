@@ -1,66 +1,144 @@
-//Queue Simulator
-
 import java.util.*;
 
-class QueueSim {
+//main class
+public class QueueSim {
 
+    //variables to store the output data
+    static double totalMessagesProcessed;
+    static double totalMessagesSent;
+    static double totalMessagesLeft;
+    static double totalMessagesRequeued;
+    static double[] attempts = new double[30];
 
     public static void main(String[] args) {
-        //ask user to input total minutes to run
-        Scanner input = new Scanner(System.in);
-        System.out.print("Please enter the total minutes to run: ");
-        int totalMinutes = input.nextInt();
-        //blank line
-        System.out.println();
+        Random rand = new Random(); //random number generator
+        Queue queue = new Queue(5000); //queue object
+        int RandomIndex = 0;
 
-        //run simulation for minutes input
-        for (int i = 0; i < totalMinutes; i++) {
-            //run simulation for each minute
-            minuteSimulation();
+        //1. Simulate the arrival of emails
+        //run for 15 minutes
+        for (int runtime = 1; runtime <= 15; runtime++) {
+            int currentMessagesSent = 0;
+            //a. RNG 0 to 60
+            int emailArrival = rand.nextInt(61);
+            //add emails to total
+            totalMessagesProcessed += emailArrival;
+            //b. push to queue
+            for (int i = 0; i < emailArrival; i++) {
+                queue.enqueue(i);
+            }
+            //2. Simulate the processing of emails
+            //number of unsent emails is 25% of the queue size
+            int numberOfUnsentEmails = (queue.size() / 4);
+            //variable to store original queue size
+            int qSize = queue.size();
+            //select random indexes for the number of unsent emails
+
+            //new arraylist to store random index values
+            ArrayList<Integer> randomIndexArray = new ArrayList<Integer>();
+            for (int i = 1; i <= numberOfUnsentEmails; i++) {
+                RandomIndex = rand.nextInt(numberOfUnsentEmails);
+                //store random index values in arraylist if not reapeated
+                if (!randomIndexArray.contains(RandomIndex)) {
+                    randomIndexArray.add(RandomIndex);
+                    //else generate new random index
+                } else {
+                    RandomIndex = rand.nextInt(numberOfUnsentEmails);
+                    randomIndexArray.add(RandomIndex);
+                }
+        }
+            //in the queue, if the index is not in the random index array, send the email
+            for (int i = 0; i < qSize; i++) {
+                if (!randomIndexArray.contains(i)) {
+                    queue.dequeue();
+                    totalMessagesSent++;
+                    currentMessagesSent++;
+                }
+                //else requeue the email
+                else {
+                    queue.enqueue(queue.front());
+                    queue.dequeue();
+                    totalMessagesRequeued++;
+                }
+            }
+            totalMessagesLeft += queue.size();
+            attempts[runtime] = (qSize-currentMessagesSent);
         }
 
-        //print output
-        System.out.println("Total number of messages processed: " + emailQueue.size());
-        System.out.println("Average arrival rate: " + emailQueue.size() / totalMinutes);
-        System.out.println("Average number of messages sent per minute: " + emailQueue.size() / totalMinutes);
-        //print arraylist
-        System.out.println(emailQueue);
-        }
-
-    // create ArrayList to use as queue
-    static ArrayList<Email> emailQueue = new ArrayList<>();
-
-    public static void minuteSimulation() {
-        //RNG for number of emails (0 to 30)Random rand = new Random();
-        int numEmails = (int) (Math.random() * 30);
-
-        //create email objects for each email generated
-        for (int i = 0; i < numEmails; i++) {
-            Email email = new Email();
-
-            emailQueue.add(email);
-        }
+        System.out.printf
+                ("Total number of messages processed: %28.2f " +
+                "\nAverage number of messages sent per minute: %20.2f\n" +
+                "Average number of messages in queue per minute: %16.2f\n" +
+                "Number of messages sent on 1st attempt: %24.0f\n" +
+                "Number of messages sent on 2nd attempt: %24.0f\n" +
+                "Number of messages sent on 3rd attempt: %24.0f\n" +
+                "Number of messages sent on 4th attempt: %24.0f\n" +
+                "Number of messages sent on 5th attempt: %24.0f\n" +
+                "Number of messages sent on 6th attempt: %24.0f\n" +
+                "Number of messages sent on 7th attempt: %24.0f\n" +
+                "Number of messages sent on 8th attempt: %24.0f\n" +
+                "Number of messages sent on 9th attempt: %24.0f\n" +
+                "Number of messages sent on 10th attempt: %23.0f\n"+
+                "Average number of times messages had to be requeued: %11.2f\n"
+                , totalMessagesProcessed, (totalMessagesSent/15), (totalMessagesLeft/15), attempts[1], attempts[2], attempts[3], attempts[4], attempts[5], attempts[6], attempts[7], attempts[8], attempts[9], attempts[10], (totalMessagesRequeued/15));
 
     }
 }
 
-class Email {
-    //variables
-    private int EmailID;
+
+class Queue{
+    private int maxSize;
+    private int[] queueArray;
+    private int front;
+    private int rear;
+    private int nItems;
 
     //constructor
-    public Email() {
+    public Queue(int qSize){
+        maxSize = qSize;
+        queueArray = new int[maxSize];
+        front = 0;
+        rear = 0;
+        nItems = 0;
     }
 
-    //getters and setters
-    public int getEmailID() {
-        return EmailID;
+    //enqueue method
+    public void enqueue(int item){
+        queueArray[++rear] = item;
+        nItems++;
     }
 
-    //assign email ID from numEmail
-    public void setEmailID(int numEmails) {
-        for (int i = 0; i < numEmails; i++) {
-            EmailID = i;
+    //dequeue method
+    public int dequeue(){
+        nItems--;
+        return queueArray[++front];
+    }
+
+    //print method
+    public void print(){
+        for (int i = 0; i < queueArray.length; i++) {
+            System.out.println(queueArray[i]);
         }
     }
+
+    //method to return the size of the queue
+    public int size(){
+        return nItems;
+    }
+
+    //method to return the front of the queue
+    public int front(){
+        return queueArray[front];
+    }
+
+    //method to check if the queue is empty
+    public boolean isEmpty(){
+        return (nItems == 0);
+    }
+
+    //method to check if the queue is full
+    public boolean isFull(){
+        return (nItems == maxSize);
+    }
 }
+
