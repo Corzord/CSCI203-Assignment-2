@@ -65,23 +65,16 @@ public class QueueSim {
             attempts[runtime] = (qSize-currentMessagesSent);
         }
 
-        System.out.printf
-                ("Total number of messages processed: %28.2f " +
-                "\nAverage number of messages sent per minute: %20.2f\n" +
-                "Average number of messages in queue per minute: %16.2f\n" +
-                "Number of messages sent on 1st attempt: %24.0f\n" +
-                "Number of messages sent on 2nd attempt: %24.0f\n" +
-                "Number of messages sent on 3rd attempt: %24.0f\n" +
-                "Number of messages sent on 4th attempt: %24.0f\n" +
-                "Number of messages sent on 5th attempt: %24.0f\n" +
-                "Number of messages sent on 6th attempt: %24.0f\n" +
-                "Number of messages sent on 7th attempt: %24.0f\n" +
-                "Number of messages sent on 8th attempt: %24.0f\n" +
-                "Number of messages sent on 9th attempt: %24.0f\n" +
-                "Number of messages sent on 10th attempt: %23.0f\n"+
-                "Average number of times messages had to be requeued: %11.2f\n"
-                , totalMessagesProcessed, (totalMessagesSent/15), (totalMessagesLeft/15), attempts[1], attempts[2], attempts[3], attempts[4], attempts[5], attempts[6], attempts[7], attempts[8], attempts[9], attempts[10], (totalMessagesRequeued/15));
-
+        System.out.printf ("Total number of messages processed: %28.0f\n" ,totalMessagesProcessed);
+        System.out.printf ("Average Arrival Rate: %42.2f\n", (totalMessagesProcessed/15));
+        System.out.printf ("Average number of messages sent per minute: %20.2f\n", (totalMessagesSent/15));
+        System.out.printf ("Average number of messages in queue per minute: %16.2f\n", (totalMessagesLeft/15));
+        System.out.printf ("Number of messages sent on 1st attempt: %24.0f\n", attempts[1]);
+        System.out.printf ("Number of messages sent on 2nd attempt: %24.0f\n", attempts[2]);
+        System.out.printf ("Number of messages sent on 3rd attempt: %24.0f\n", attempts[3]);
+        System.out.printf ("Number of messages sent on 4th attempt: %24.0f\n", attempts[4]);
+        System.out.printf ("Number of messages sent on 5th attempt: %24.0f\n", attempts[5]);
+        System.out.printf ("Average number of times messages had to be requeued: %11.2f\n", (totalMessagesRequeued/totalMessagesProcessed));
     }
 }
 
@@ -114,13 +107,6 @@ class Queue{
         return queueArray[++front];
     }
 
-    //print method
-    public void print(){
-        for (int i = 0; i < queueArray.length; i++) {
-            System.out.println(queueArray[i]);
-        }
-    }
-
     //method to return the size of the queue
     public int size(){
         return nItems;
@@ -129,16 +115,6 @@ class Queue{
     //method to return the front of the queue
     public int front(){
         return queueArray[front];
-    }
-
-    //method to check if the queue is empty
-    public boolean isEmpty(){
-        return (nItems == 0);
-    }
-
-    //method to check if the queue is full
-    public boolean isFull(){
-        return (nItems == maxSize);
     }
 }
 
